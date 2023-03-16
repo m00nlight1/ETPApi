@@ -1,0 +1,20 @@
+version: '3.5'
+
+services:
+  db_data:
+    container_name: db_data
+    ports:
+     - "6101:6101"
+    environment:
+     - POSTGRES_PASSWORD=root
+     - POSTGRES_USER=admin
+    image: postgres:14.3-alpine
+    command:
+      - "postgres"
+      - "-c"
+      - "port=6101"
+    volumes:
+      - db_data_vol:/var/lib/postgresql/data/
+
+volumes:
+  db_data_vol: {}
