@@ -93,7 +93,7 @@ packages:
     source: hosted
     version: "4.2.0"
   conduit_core:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: conduit_core
       url: "https://pub.dartlang.org"
@@ -149,7 +149,7 @@ packages:
     source: hosted
     version: "3.0.2"
   file:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: file
       url: "https://pub.dartlang.org"

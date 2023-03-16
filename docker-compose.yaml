@@ -1,6 +1,24 @@
 version: '3.5'
 
 services:
+  data:
+    build: ./etp_data
+    container_name: data
+    ports:
+      - 6100:6100
+    environment:
+      - SECRET_KEY=SECRET_KEY
+      - PORT=6100
+      - DB_USERNAME=admin
+      - DB_PASSWORD=root
+      - DB_HOST=db_data
+      - DB_PORT=6101
+      - DB_NAME=postgres
+    depends_on:
+      - db_data
+    networks:
+      - internal_net
+
   db_data:
     container_name: db_data
     ports:
@@ -15,6 +33,12 @@ services:
       - "port=6101"
     volumes:
       - db_data_vol:/var/lib/postgresql/data/
+    networks:
+      - internal_net
 
 volumes:
   db_data_vol: {}
+
+networks:
+  internal_net:
+    driver: bridge
