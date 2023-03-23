@@ -18,6 +18,8 @@ services:
       - db_data
     networks:
       - internal_net
+    volumes:
+      - data_vol:/app/
 
   db_data:
     restart: on-failure
@@ -52,6 +54,7 @@ services:
 
 volumes:
   db_data_vol: {}
+  data_vol: {}
 
 networks:
   internal_net:

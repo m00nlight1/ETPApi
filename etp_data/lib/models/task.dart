@@ -6,25 +6,22 @@ class Task extends ManagedObject<_Task> implements _Task {}
 class _Task {
   @primaryKey
   int? id;
-  @Column()
   String? title;
-  @Column()
   String? content;
-  @Column()
+  DateTime? createdAt;
   DateTime? startOfWork;
-  @Column()
   DateTime? endOfWork;
-  @Column(nullable: true)
+  @Column(nullable: true, omitByDefault: true)
   String? contractorCompany;
-  @Column(nullable: true)
+  @Column(nullable: true, omitByDefault: true)
   String? responsibleMaster;
-  @Column(nullable: true)
+  @Column(nullable: true, omitByDefault: true)
   String? representative;
-  @Column(nullable: true)
+  @Column(nullable: true, omitByDefault: true)
   String? equipmentLevel;
-  @Column(nullable: true)
+  @Column(nullable: true, omitByDefault: true)
   String? staffLevel;
-  @Column(nullable: true)
+  @Column(nullable: true, omitByDefault: true)
   String? resultsOfTheWork;
   @Relate(#taskList, isRequired: true, onDelete: DeleteRule.cascade)
   Author? author;

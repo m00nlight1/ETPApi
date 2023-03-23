@@ -16,6 +16,13 @@ class AppTaskController extends ResourceController {
       @Bind.header(HttpHeaders.authorizationHeader) String header,
       @Bind.body() Task task) async {
     try {
+      if (task.title == null ||
+          task.title?.isEmpty == true ||
+          task.content == null ||
+          task.content?.isEmpty == true) {
+        return AppResponse.badRequest(
+            message: "Поля Название и Описание обязательны");
+      }
       final id = AppUtils.getIdFromHeader(header);
       final author = await managedContext.fetchObjectWithID<Author>(id);
       if (author == null) {
@@ -26,6 +33,7 @@ class AppTaskController extends ResourceController {
         ..values.author?.id = id
         ..values.title = task.title
         ..values.content = task.content
+        ..values.createdAt = DateTime.now()
         ..values.startOfWork = task.startOfWork
         ..values.endOfWork = task.endOfWork
         ..values.contractorCompany = task.contractorCompany
@@ -46,11 +54,29 @@ class AppTaskController extends ResourceController {
       @Bind.header(HttpHeaders.authorizationHeader) String header,
       @Bind.path("id") int id) async {
     try {
-      final task = await managedContext.fetchObjectWithID<Task>(id);
+      final qGetTask = Query<Task>(managedContext)
+        ..where((x) => x.id).equalTo(id)
+        ..returningProperties((x) => [
+              x.id,
+              x.title,
+              x.content,
+              x.createdAt,
+              x.startOfWork,
+              x.endOfWork,
+              x.contractorCompany,
+              x.responsibleMaster,
+              x.representative,
+              x.equipmentLevel,
+              x.staffLevel,
+              x.resultsOfTheWork,
+              x.author
+            ]);
+      final task = await qGetTask.fetchOne();
       if (task == null) {
         return AppResponse.ok(message: "Задача не найдена");
       }
-      return AppResponse.ok(body: task.backing.contents);
+      return AppResponse.ok(
+          body: task.backing.contents, message: "Успешное получение задачи");
     } catch (error) {
       return AppResponse.serverError(error, message: "Ошибка доступа");
     }
@@ -75,6 +101,7 @@ class AppTaskController extends ResourceController {
         ..values.author?.id = currentAuthorId
         ..values.title = updatedTask.title
         ..values.content = updatedTask.content
+        ..values.createdAt = DateTime.now()
         ..values.startOfWork = updatedTask.startOfWork
         ..values.endOfWork = updatedTask.endOfWork
         ..values.contractorCompany = updatedTask.contractorCompany
@@ -83,7 +110,13 @@ class AppTaskController extends ResourceController {
         ..values.equipmentLevel = updatedTask.equipmentLevel
         ..values.staffLevel = updatedTask.staffLevel
         ..values.resultsOfTheWork = updatedTask.resultsOfTheWork;
-
+      if (updatedTask.title == null ||
+          updatedTask.title?.isEmpty == true ||
+          updatedTask.content == null ||
+          updatedTask.content?.isEmpty == true) {
+        return AppResponse.badRequest(
+            message: "Поля Название и Описание обязательны");
+      }
       await qUpdateTask.update();
       return AppResponse.ok(message: "Заметка успешно обновлена");
     } catch (error) {
@@ -103,7 +136,8 @@ class AppTaskController extends ResourceController {
         return AppResponse.ok(message: "Задача не найдена");
       }
       if (task.author?.id != currentAuthorId) {
-        return AppResponse.ok(message: "Нельзя удалить задачу другого пользователя");
+        return AppResponse.ok(
+            message: "Нельзя удалить задачу другого пользователя");
       }
       final qDeleteTask = Query<Task>(managedContext)
         ..where((x) => x.id).equalTo(id);
