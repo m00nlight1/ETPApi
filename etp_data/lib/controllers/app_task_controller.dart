@@ -41,12 +41,88 @@ class AppTaskController extends ResourceController {
     }
   }
 
-  @Operation.get()
-  Future<Response> getTasks() async {
+  @Operation.get("id")
+  Future<Response> getTask(
+      @Bind.header(HttpHeaders.authorizationHeader) String header,
+      @Bind.path("id") int id) async {
     try {
-      return AppResponse.ok(message: "Успешное получение задач");
+      final task = await managedContext.fetchObjectWithID<Task>(id);
+      if (task == null) {
+        return AppResponse.ok(message: "Задача не найдена");
+      }
+      return AppResponse.ok(body: task.backing.contents);
     } catch (error) {
-      return AppResponse.serverError(error, message: "Ошибка получения задач");
+      return AppResponse.serverError(error, message: "Ошибка доступа");
+    }
+  }
+
+  @Operation.put("id")
+  Future<Response> updateTask(
+      @Bind.header(HttpHeaders.authorizationHeader) String header,
+      @Bind.path("id") int id,
+      @Bind.body() Task updatedTask) async {
+    try {
+      final currentAuthorId = AppUtils.getIdFromHeader(header);
+      final task = await managedContext.fetchObjectWithID<Task>(id);
+      if (task == null) {
+        return AppResponse.ok(message: "Задача не найдена");
+      }
+      if (task.author?.id != currentAuthorId) {
+        return AppResponse.ok(message: "Нет доступа к редактированию задачи");
+      }
+      final qUpdateTask = Query<Task>(managedContext)
+        ..where((x) => x.id).equalTo(id)
+        ..values.author?.id = currentAuthorId
+        ..values.title = updatedTask.title
+        ..values.content = updatedTask.content
+        ..values.startOfWork = updatedTask.startOfWork
+        ..values.endOfWork = updatedTask.endOfWork
+        ..values.contractorCompany = updatedTask.contractorCompany
+        ..values.responsibleMaster = updatedTask.responsibleMaster
+        ..values.representative = updatedTask.representative
+        ..values.equipmentLevel = updatedTask.equipmentLevel
+        ..values.staffLevel = updatedTask.staffLevel
+        ..values.resultsOfTheWork = updatedTask.resultsOfTheWork;
+
+      await qUpdateTask.update();
+      return AppResponse.ok(message: "Заметка успешно обновлена");
+    } catch (error) {
+      return AppResponse.serverError(error,
+          message: "Ошибка редактирования задачи");
+    }
+  }
+
+  @Operation.delete("id")
+  Future<Response> deleteTask(
+      @Bind.header(HttpHeaders.authorizationHeader) String header,
+      @Bind.path("id") int id) async {
+    try {
+      final currentAuthorId = AppUtils.getIdFromHeader(header);
+      final task = await managedContext.fetchObjectWithID<Task>(id);
+      if (task == null) {
+        return AppResponse.ok(message: "Задача не найдена");
+      }
+      if (task.author?.id != currentAuthorId) {
+        return AppResponse.ok(message: "Нельзя удалить задачу другого пользователя");
+      }
+      final qDeleteTask = Query<Task>(managedContext)
+        ..where((x) => x.id).equalTo(id);
+      await qDeleteTask.delete();
+      return AppResponse.ok(message: "Задача удалена");
+    } catch (error) {
+      return AppResponse.serverError(error, message: "Ошибка удаления задачи");
+    }
+  }
+
+  @Operation.get()
+  Future<Response> getAllTasks() async {
+    try {
+      final qGetAllTasks = Query<Task>(managedContext);
+      final List<Task> tasks = await qGetAllTasks.fetch();
+      if (tasks.isEmpty) return Response.notFound();
+      return Response.ok(tasks);
+    } catch (error) {
+      return AppResponse.serverError(error, message: "Ошибка вывода задач");
     }
   }
 }
