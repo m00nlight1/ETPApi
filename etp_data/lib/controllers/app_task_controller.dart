@@ -54,33 +54,55 @@ class AppTaskController extends ResourceController {
       @Bind.header(HttpHeaders.authorizationHeader) String header,
       @Bind.path("id") int id) async {
     try {
+      final currentUserId = AppUtils.getIdFromHeader(header);
+      final task = await managedContext.fetchObjectWithID<Task>(id);
+
+      if (task == null) {
+        return AppResponse.ok(message: "Заметка не найдена");
+      }
       final qGetTask = Query<Task>(managedContext)
         ..where((x) => x.id).equalTo(id)
-        ..returningProperties((x) => [
-              x.id,
-              x.title,
-              x.content,
-              x.createdAt,
-              x.startOfWork,
-              x.endOfWork,
-              x.contractorCompany,
-              x.responsibleMaster,
-              x.representative,
-              x.equipmentLevel,
-              x.staffLevel,
-              x.resultsOfTheWork,
-              x.author
-            ]);
-      final task = await qGetTask.fetchOne();
-      if (task == null) {
-        return AppResponse.ok(message: "Задача не найдена");
-      }
-      return AppResponse.ok(
-          body: task.backing.contents, message: "Успешное получение задачи");
+        ..join(object: (x) => x.author);
+      final currentTask = await qGetTask.fetchOne();
+
+      return Response.ok(currentTask);
     } catch (error) {
       return AppResponse.serverError(error, message: "Ошибка доступа");
     }
   }
+
+  // @Operation.get("id")
+  // Future<Response> getTask(
+  //     @Bind.header(HttpHeaders.authorizationHeader) String header,
+  //     @Bind.path("id") int id) async {
+  //   try {
+  //     // final task = await managedContext.fetchObjectWithID<Task>(id);
+  //     final qGetTask = Query<Task>(managedContext)
+  //       ..where((x) => x.id).equalTo(id)
+  //       ..returningProperties((x) => [
+  //             x.id,
+  //             x.title,
+  //             x.content,
+  //             x.createdAt,
+  //             x.startOfWork,
+  //             x.endOfWork,
+  //             x.contractorCompany,
+  //             x.responsibleMaster,
+  //             x.representative,
+  //             x.equipmentLevel,
+  //             x.staffLevel,
+  //             x.resultsOfTheWork,
+  //             x.author
+  //           ]);
+  //     final currentTask = await qGetTask.fetchOne();
+  //     if (currentTask == null) {
+  //       return AppResponse.ok(message: "Задача не найдена");
+  //     }
+  //     return Response.ok(currentTask);
+  //   } catch (error) {
+  //     return AppResponse.serverError(error, message: "Ошибка доступа");
+  //   }
+  // }
 
   @Operation.put("id")
   Future<Response> updateTask(
