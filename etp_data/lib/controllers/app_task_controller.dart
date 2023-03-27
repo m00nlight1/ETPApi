@@ -1,8 +1,9 @@
 import 'dart:io';
 
 import 'package:conduit/conduit.dart';
-import 'package:etp_data/models/author.dart';
+import 'package:etp_data/models/category.dart';
 import 'package:etp_data/models/task.dart';
+import 'package:etp_data/models/user.dart';
 import 'package:etp_data/utils/app_response.dart';
 import 'package:etp_data/utils/app_utils.dart';
 
@@ -24,13 +25,11 @@ class AppTaskController extends ResourceController {
             message: "Поля Название и Описание обязательны");
       }
       final id = AppUtils.getIdFromHeader(header);
-      final author = await managedContext.fetchObjectWithID<Author>(id);
-      if (author == null) {
-        final qCreateAuthor = Query<Author>(managedContext)..values.id = id;
-        await qCreateAuthor.insert();
-      }
+      final Category category = Category();
+      category.id = task.idCategory;
       final qCreateTask = Query<Task>(managedContext)
-        ..values.author?.id = id
+        ..values.category = category
+        ..values.user?.id = id
         ..values.title = task.title
         ..values.content = task.content
         ..values.createdAt = DateTime.now()
@@ -50,19 +49,33 @@ class AppTaskController extends ResourceController {
   }
 
   @Operation.get("id")
-  Future<Response> getTask(
-      @Bind.header(HttpHeaders.authorizationHeader) String header,
-      @Bind.path("id") int id) async {
+  Future<Response> getTask(@Bind.path("id") int id) async {
     try {
-      final currentUserId = AppUtils.getIdFromHeader(header);
       final task = await managedContext.fetchObjectWithID<Task>(id);
-
       if (task == null) {
         return AppResponse.ok(message: "Заметка не найдена");
       }
       final qGetTask = Query<Task>(managedContext)
         ..where((x) => x.id).equalTo(id)
-        ..join(object: (x) => x.author);
+        ..returningProperties((x) => [
+              x.id,
+              x.title,
+              x.content,
+              x.createdAt,
+              x.startOfWork,
+              x.endOfWork,
+              x.contractorCompany,
+              x.responsibleMaster,
+              x.representative,
+              x.equipmentLevel,
+              x.staffLevel,
+              x.resultsOfTheWork,
+              x.user,
+              x.category
+            ])
+        ..join(object: (x) => x.user)
+            .returningProperties((x) => [x.id, x.username, x.email])
+        ..join(object: (x) => x.category);
       final currentTask = await qGetTask.fetchOne();
 
       return Response.ok(currentTask);
@@ -70,39 +83,6 @@ class AppTaskController extends ResourceController {
       return AppResponse.serverError(error, message: "Ошибка доступа");
     }
   }
-
-  // @Operation.get("id")
-  // Future<Response> getTask(
-  //     @Bind.header(HttpHeaders.authorizationHeader) String header,
-  //     @Bind.path("id") int id) async {
-  //   try {
-  //     // final task = await managedContext.fetchObjectWithID<Task>(id);
-  //     final qGetTask = Query<Task>(managedContext)
-  //       ..where((x) => x.id).equalTo(id)
-  //       ..returningProperties((x) => [
-  //             x.id,
-  //             x.title,
-  //             x.content,
-  //             x.createdAt,
-  //             x.startOfWork,
-  //             x.endOfWork,
-  //             x.contractorCompany,
-  //             x.responsibleMaster,
-  //             x.representative,
-  //             x.equipmentLevel,
-  //             x.staffLevel,
-  //             x.resultsOfTheWork,
-  //             x.author
-  //           ]);
-  //     final currentTask = await qGetTask.fetchOne();
-  //     if (currentTask == null) {
-  //       return AppResponse.ok(message: "Задача не найдена");
-  //     }
-  //     return Response.ok(currentTask);
-  //   } catch (error) {
-  //     return AppResponse.serverError(error, message: "Ошибка доступа");
-  //   }
-  // }
 
   @Operation.put("id")
   Future<Response> updateTask(
@@ -115,12 +95,15 @@ class AppTaskController extends ResourceController {
       if (task == null) {
         return AppResponse.ok(message: "Задача не найдена");
       }
-      if (task.author?.id != currentAuthorId) {
+      if (task.user?.id != currentAuthorId) {
         return AppResponse.ok(message: "Нет доступа к редактированию задачи");
       }
+      final Category category = Category();
+      category.id = updatedTask.idCategory;
       final qUpdateTask = Query<Task>(managedContext)
         ..where((x) => x.id).equalTo(id)
-        ..values.author?.id = currentAuthorId
+        ..values.user?.id = currentAuthorId
+        ..values.category = category
         ..values.title = updatedTask.title
         ..values.content = updatedTask.content
         ..values.createdAt = DateTime.now()
@@ -140,7 +123,7 @@ class AppTaskController extends ResourceController {
             message: "Поля Название и Описание обязательны");
       }
       await qUpdateTask.update();
-      return AppResponse.ok(message: "Заметка успешно обновлена");
+      return AppResponse.ok(message: "Задача успешно обновлена");
     } catch (error) {
       return AppResponse.serverError(error,
           message: "Ошибка редактирования задачи");
@@ -157,7 +140,7 @@ class AppTaskController extends ResourceController {
       if (task == null) {
         return AppResponse.ok(message: "Задача не найдена");
       }
-      if (task.author?.id != currentAuthorId) {
+      if (task.user?.id != currentAuthorId) {
         return AppResponse.ok(
             message: "Нельзя удалить задачу другого пользователя");
       }
