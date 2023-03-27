@@ -156,7 +156,11 @@ class AppTaskController extends ResourceController {
   @Operation.get()
   Future<Response> getAllTasks() async {
     try {
-      final qGetAllTasks = Query<Task>(managedContext);
+      final qGetAllTasks = Query<Task>(managedContext)
+        ..join(object: (x) => x.category)
+            .returningProperties((x) => [x.id, x.name])
+        ..join(object: (x) => x.user)
+            .returningProperties((x) => [x.id, x.username, x.email]);
       final List<Task> tasks = await qGetAllTasks.fetch();
       if (tasks.isEmpty) return Response.notFound();
       return Response.ok(tasks);
