@@ -17,17 +17,17 @@ class _Task {
   DateTime? startOfWork;
   @Column(indexed: true)
   DateTime? endOfWork;
-  @Column(nullable: true, omitByDefault: true)
+  @Column(nullable: true, indexed: true)
   String? contractorCompany;
-  @Column(nullable: true, omitByDefault: true)
+  @Column(nullable: true, indexed: true)
   String? responsibleMaster;
-  @Column(nullable: true, omitByDefault: true)
+  @Column(nullable: true, indexed: true)
   String? representative;
-  @Column(nullable: true, omitByDefault: true)
+  @Column(nullable: true, indexed: true)
   String? equipmentLevel;
-  @Column(nullable: true, omitByDefault: true)
+  @Column(nullable: true, indexed: true)
   String? staffLevel;
-  @Column(nullable: true, omitByDefault: true)
+  @Column(nullable: true, indexed: true)
   String? resultsOfTheWork;
 
   @Serialize(input: true, output: false)

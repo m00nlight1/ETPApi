@@ -51,6 +51,10 @@ class AppTaskController extends ResourceController {
   @Operation.get("id")
   Future<Response> getTask(@Bind.path("id") int id) async {
     try {
+      final task = await managedContext.fetchObjectWithID<Task>(id);
+      if (task == null) {
+        return AppResponse.ok(message: "Задача не найдена");
+      }
       final qGetTask = Query<Task>(managedContext)
         ..where((x) => x.id).equalTo(id)
         ..returningProperties((x) => [
@@ -72,12 +76,8 @@ class AppTaskController extends ResourceController {
         ..join(object: (x) => x.user)
             .returningProperties((x) => [x.id, x.username, x.email])
         ..join(object: (x) => x.category);
-      final task = await qGetTask.fetchOne();
-      if (task == null) {
-        return AppResponse.ok(message: "Задача не найдена");
-      }
-      return AppResponse.ok(
-          body: task.backing.contents, message: "Успешное получение задачи");
+      final currentTask = await qGetTask.fetchOne();
+      return Response.ok(currentTask);
     } catch (error) {
       return AppResponse.serverError(error, message: "Ошибка доступа");
     }
@@ -163,6 +163,12 @@ class AppTaskController extends ResourceController {
               x.createdAt,
               x.startOfWork,
               x.endOfWork,
+              x.contractorCompany,
+              x.responsibleMaster,
+              x.representative,
+              x.equipmentLevel,
+              x.staffLevel,
+              x.resultsOfTheWork,
               x.user,
               x.category
             ])
@@ -171,7 +177,7 @@ class AppTaskController extends ResourceController {
         ..join(object: (x) => x.category);
       final List<Task> tasks = await qGetAllTasks.fetch();
       if (tasks.isEmpty) return Response.notFound();
-      return AppResponse.ok(body: tasks, message: "Получение всех задач");
+      return Response.ok(tasks);
     } catch (error) {
       return AppResponse.serverError(error, message: "Ошибка вывода задач");
     }
