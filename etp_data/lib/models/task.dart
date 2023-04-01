@@ -18,6 +18,8 @@ class _Task {
   @Column(indexed: true)
   DateTime? endOfWork;
   @Column(nullable: true, indexed: true)
+  String? imageUrl;
+  @Column(nullable: true, indexed: true)
   String? contractorCompany;
   @Column(nullable: true, indexed: true)
   String? responsibleMaster;

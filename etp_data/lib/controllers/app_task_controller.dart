@@ -35,6 +35,7 @@ class AppTaskController extends ResourceController {
         ..values.createdAt = DateTime.now()
         ..values.startOfWork = task.startOfWork
         ..values.endOfWork = task.endOfWork
+        ..values.imageUrl = task.imageUrl
         ..values.contractorCompany = task.contractorCompany
         ..values.responsibleMaster = task.responsibleMaster
         ..values.representative = task.representative
@@ -64,6 +65,7 @@ class AppTaskController extends ResourceController {
               x.createdAt,
               x.startOfWork,
               x.endOfWork,
+              x.imageUrl,
               x.contractorCompany,
               x.responsibleMaster,
               x.representative,
@@ -108,6 +110,7 @@ class AppTaskController extends ResourceController {
         ..values.createdAt = DateTime.now()
         ..values.startOfWork = updatedTask.startOfWork
         ..values.endOfWork = updatedTask.endOfWork
+        ..values.imageUrl = updatedTask.imageUrl
         ..values.contractorCompany = updatedTask.contractorCompany
         ..values.responsibleMaster = updatedTask.responsibleMaster
         ..values.representative = updatedTask.representative
@@ -163,6 +166,7 @@ class AppTaskController extends ResourceController {
               x.createdAt,
               x.startOfWork,
               x.endOfWork,
+              x.imageUrl,
               x.contractorCompany,
               x.responsibleMaster,
               x.representative,
