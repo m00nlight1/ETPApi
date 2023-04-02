@@ -1,5 +1,6 @@
 import 'package:conduit/conduit.dart';
 import 'package:etp_data/models/category.dart';
+import 'package:etp_data/models/message.dart';
 import 'package:etp_data/models/user.dart';
 
 class Task extends ManagedObject<_Task> implements _Task {}
@@ -34,9 +35,11 @@ class _Task {
 
   @Serialize(input: true, output: false)
   int? idCategory;
-  
+
   @Relate(#taskList, isRequired: true, onDelete: DeleteRule.cascade)
   Category? category;
   @Relate(#tasks, isRequired: true, onDelete: DeleteRule.cascade)
   User? user;
+
+  ManagedSet<Message>? messages;
 }

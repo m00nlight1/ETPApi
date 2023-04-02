@@ -1,4 +1,5 @@
 import 'package:conduit/conduit.dart';
+import 'package:etp_data/models/message.dart';
 import 'package:etp_data/models/task.dart';
 
 class User extends ManagedObject<_User> implements _User {}
@@ -22,4 +23,5 @@ class _User {
   String? hashPassword;
 
   ManagedSet<Task>? tasks;
+  ManagedSet<Message>? messages;
 }
