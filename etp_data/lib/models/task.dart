@@ -1,6 +1,7 @@
 import 'package:conduit/conduit.dart';
 import 'package:etp_data/models/category.dart';
 import 'package:etp_data/models/message.dart';
+import 'package:etp_data/models/status.dart';
 import 'package:etp_data/models/user.dart';
 
 class Task extends ManagedObject<_Task> implements _Task {}
@@ -40,6 +41,8 @@ class _Task {
   Category? category;
   @Relate(#tasks, isRequired: true, onDelete: DeleteRule.cascade)
   User? user;
+  @Relate(#listTask, isRequired: false, onDelete: DeleteRule.cascade)
+  Status? status;
 
   ManagedSet<Message>? messages;
 }
