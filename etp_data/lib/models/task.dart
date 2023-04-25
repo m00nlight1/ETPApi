@@ -1,7 +1,9 @@
 import 'package:conduit/conduit.dart';
 import 'package:etp_data/models/category.dart';
+import 'package:etp_data/models/industry.dart';
 import 'package:etp_data/models/message.dart';
 import 'package:etp_data/models/status.dart';
+import 'package:etp_data/models/task_type.dart';
 import 'package:etp_data/models/user.dart';
 
 class Task extends ManagedObject<_Task> implements _Task {}
@@ -33,6 +35,8 @@ class _Task {
   String? staffLevel;
   @Column(nullable: true, indexed: true)
   String? resultsOfTheWork;
+  @Column(nullable: true, indexed: true)
+  String? expenses;
 
   @Serialize(input: true, output: false)
   int? idCategory;
@@ -43,6 +47,10 @@ class _Task {
   User? user;
   @Relate(#listTask, isRequired: false, onDelete: DeleteRule.cascade)
   Status? status;
+  @Relate(#taskDeffIndustry, isRequired: false, onDelete: DeleteRule.cascade)
+  Industry? industry;
+  @Relate(#taskListType, isRequired: false, onDelete: DeleteRule.cascade)
+  TaskType? taskType;
 
   ManagedSet<Message>? messages;
 }

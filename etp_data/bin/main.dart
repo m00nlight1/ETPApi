@@ -5,6 +5,8 @@ import 'package:etp_data/models/task.dart';
 import 'package:etp_data/models/category.dart';
 import 'package:etp_data/models/message.dart';
 import 'package:etp_data/models/status.dart';
+import 'package:etp_data/models/industry.dart';
+import 'package:etp_data/models/task_type.dart';
 
 void main(List<String> arguments) async {
   final int port = int.tryParse(AppEnv.port) ?? 0;
