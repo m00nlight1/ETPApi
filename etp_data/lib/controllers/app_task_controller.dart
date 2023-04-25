@@ -2,7 +2,10 @@ import 'dart:io';
 
 import 'package:conduit/conduit.dart';
 import 'package:etp_data/models/category.dart';
+import 'package:etp_data/models/industry.dart';
+import 'package:etp_data/models/status.dart';
 import 'package:etp_data/models/task.dart';
+import 'package:etp_data/models/task_type.dart';
 import 'package:etp_data/models/user.dart';
 import 'package:etp_data/utils/app_response.dart';
 import 'package:etp_data/utils/app_utils.dart';
@@ -22,13 +25,22 @@ class AppTaskController extends ResourceController {
           task.content == null ||
           task.content?.isEmpty == true) {
         return AppResponse.badRequest(
-            message: "Поля Название и Описание обязательны");
+            message: "Заполните поля Название и Описание");
       }
       final id = AppUtils.getIdFromHeader(header);
       final Category category = Category();
+      final Status status = Status();
+      final Industry industry = Industry();
+      final TaskType taskType = TaskType();
       category.id = task.idCategory;
+      status.id = task.idStatus;
+      industry.id = task.idIndustry;
+      taskType.id = task.idTaskType;
       final qCreateTask = Query<Task>(managedContext)
         ..values.category = category
+        ..values.status = status
+        ..values.industry = industry
+        ..values.taskType = taskType
         ..values.user?.id = id
         ..values.title = task.title
         ..values.content = task.content
@@ -41,7 +53,8 @@ class AppTaskController extends ResourceController {
         ..values.representative = task.representative
         ..values.equipmentLevel = task.equipmentLevel
         ..values.staffLevel = task.staffLevel
-        ..values.resultsOfTheWork = task.resultsOfTheWork;
+        ..values.resultsOfTheWork = task.resultsOfTheWork
+        ..values.expenses = task.expenses;
       await qCreateTask.insert();
       return AppResponse.ok(message: "Успешное создание задачи");
     } catch (error) {
@@ -72,11 +85,18 @@ class AppTaskController extends ResourceController {
               x.equipmentLevel,
               x.staffLevel,
               x.resultsOfTheWork,
+              x.expenses,
               x.user,
-              x.category
+              x.category,
+              x.status,
+              x.industry,
+              x.taskType
             ])
         ..join(object: (x) => x.user)
             .returningProperties((x) => [x.id, x.username, x.email])
+        ..join(object: (x) => x.status)
+        ..join(object: (x) => x.industry)
+        ..join(object: (x) => x.taskType)
         ..join(object: (x) => x.category);
       final currentTask = await qGetTask.fetchOne();
       return Response.ok(currentTask);
@@ -100,11 +120,20 @@ class AppTaskController extends ResourceController {
         return AppResponse.ok(message: "Нет доступа к редактированию задачи");
       }
       final Category category = Category();
+      final Status status = Status();
+      final Industry industry = Industry();
+      final TaskType taskType = TaskType();
       category.id = updatedTask.idCategory;
+      status.id = updatedTask.idStatus;
+      industry.id = updatedTask.idIndustry;
+      taskType.id = updatedTask.idTaskType;
       final qUpdateTask = Query<Task>(managedContext)
         ..where((x) => x.id).equalTo(id)
         ..values.user?.id = currentAuthorId
         ..values.category = category
+        ..values.status = status
+        ..values.industry = industry
+        ..values.taskType = taskType
         ..values.title = updatedTask.title
         ..values.content = updatedTask.content
         ..values.createdAt = DateTime.now()
@@ -116,13 +145,14 @@ class AppTaskController extends ResourceController {
         ..values.representative = updatedTask.representative
         ..values.equipmentLevel = updatedTask.equipmentLevel
         ..values.staffLevel = updatedTask.staffLevel
-        ..values.resultsOfTheWork = updatedTask.resultsOfTheWork;
+        ..values.resultsOfTheWork = updatedTask.resultsOfTheWork
+        ..values.expenses = updatedTask.expenses;
       if (updatedTask.title == null ||
           updatedTask.title?.isEmpty == true ||
           updatedTask.content == null ||
           updatedTask.content?.isEmpty == true) {
         return AppResponse.badRequest(
-            message: "Поля Название и Описание обязательны");
+            message: "Заполните поля Название и Описание");
       }
       await qUpdateTask.update();
       return AppResponse.ok(message: "Задача успешно обновлена");
@@ -173,11 +203,18 @@ class AppTaskController extends ResourceController {
               x.equipmentLevel,
               x.staffLevel,
               x.resultsOfTheWork,
+              x.expenses,
               x.user,
-              x.category
+              x.category,
+              x.status,
+              x.industry,
+              x.taskType
             ])
         ..join(object: (x) => x.user)
             .returningProperties((x) => [x.id, x.username, x.email])
+        ..join(object: (x) => x.status)
+        ..join(object: (x) => x.industry)
+        ..join(object: (x) => x.taskType)
         ..join(object: (x) => x.category);
       final List<Task> tasks = await qGetAllTasks.fetch();
       if (tasks.isEmpty) return Response.notFound();

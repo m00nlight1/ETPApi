@@ -40,6 +40,12 @@ class _Task {
 
   @Serialize(input: true, output: false)
   int? idCategory;
+  @Serialize(input: true, output: false)
+  int? idStatus;
+  @Serialize(input: true, output: false)
+  int? idIndustry;
+  @Serialize(input: true, output: false)
+  int? idTaskType;
 
   @Relate(#taskList, isRequired: true, onDelete: DeleteRule.cascade)
   Category? category;
