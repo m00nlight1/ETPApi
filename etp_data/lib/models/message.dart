@@ -9,6 +9,8 @@ class _Message {
   int? id;
   @Column(indexed: true)
   String? content;
+  @Column(nullable: true, indexed: true)
+  String? imageUrl;
   @Column(indexed: true)
   DateTime? sentTo;
 

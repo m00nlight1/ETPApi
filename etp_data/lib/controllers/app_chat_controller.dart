@@ -16,7 +16,7 @@ class AppChatController extends ResourceController {
       @Bind.header(HttpHeaders.authorizationHeader) String header,
       @Bind.body() Message message) async {
     try {
-      if (message.content == null || message.content?.isEmpty == true) {
+      if (message.content == null || message.content?.isEmpty == true || message.imageUrl == null) {
         return AppResponse.badRequest(
             message: "Нельзя отправить пустое сообщение");
       }
@@ -25,6 +25,7 @@ class AppChatController extends ResourceController {
       currentTask.id = message.idTask;
       final qSentMessage = Query<Message>(managedContext)
         ..values.content = message.content
+        ..values.imageUrl = message.imageUrl
         ..values.sentTo = DateTime.now()
         ..values.user?.id = userId
         ..values.task = currentTask;
@@ -46,7 +47,7 @@ class AppChatController extends ResourceController {
       final qGetTaskChat = Query<Message>(managedContext)
         ..where((x) => x.task?.id).equalTo(taskId)
         ..returningProperties(
-            (x) => [x.id, x.content, x.sentTo, x.user, x.task])
+            (x) => [x.id, x.content, x.imageUrl, x.sentTo, x.user, x.task])
         ..join(object: (x) => x.user)
             .returningProperties((x) => [x.id, x.username, x.email])
         ..join(object: (x) => x.task);
