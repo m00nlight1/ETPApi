@@ -16,7 +16,7 @@ class AppChatController extends ResourceController {
       @Bind.header(HttpHeaders.authorizationHeader) String header,
       @Bind.body() Message message) async {
     try {
-      if (message.content == null || message.content?.isEmpty == true || message.imageUrl == null) {
+      if (message.content == null || message.content?.isEmpty == true && message.imageUrl == null || message.imageUrl?.isEmpty == true) {
         return AppResponse.badRequest(
             message: "Нельзя отправить пустое сообщение");
       }
