@@ -6,7 +6,6 @@ import 'package:etp_data/models/industry.dart';
 import 'package:etp_data/models/status.dart';
 import 'package:etp_data/models/task.dart';
 import 'package:etp_data/models/task_type.dart';
-import 'package:etp_data/models/user.dart';
 import 'package:etp_data/utils/app_response.dart';
 import 'package:etp_data/utils/app_utils.dart';
 
@@ -48,6 +47,7 @@ class AppTaskController extends ResourceController {
         ..values.startOfWork = task.startOfWork
         ..values.endOfWork = task.endOfWork
         ..values.imageUrl = task.imageUrl
+        ..values.fileUrl = task.fileUrl
         ..values.contractorCompany = task.contractorCompany
         ..values.responsibleMaster = task.responsibleMaster
         ..values.representative = task.representative
@@ -79,6 +79,7 @@ class AppTaskController extends ResourceController {
               x.startOfWork,
               x.endOfWork,
               x.imageUrl,
+              x.fileUrl,
               x.contractorCompany,
               x.responsibleMaster,
               x.representative,
@@ -140,6 +141,7 @@ class AppTaskController extends ResourceController {
         ..values.startOfWork = updatedTask.startOfWork
         ..values.endOfWork = updatedTask.endOfWork
         ..values.imageUrl = updatedTask.imageUrl
+        ..values.fileUrl = updatedTask.fileUrl
         ..values.contractorCompany = updatedTask.contractorCompany
         ..values.responsibleMaster = updatedTask.responsibleMaster
         ..values.representative = updatedTask.representative
@@ -197,6 +199,7 @@ class AppTaskController extends ResourceController {
               x.startOfWork,
               x.endOfWork,
               x.imageUrl,
+              x.fileUrl,
               x.contractorCompany,
               x.responsibleMaster,
               x.representative,
