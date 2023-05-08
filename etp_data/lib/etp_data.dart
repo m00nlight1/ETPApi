@@ -2,6 +2,7 @@ import 'package:conduit/conduit.dart';
 import 'package:etp_data/controllers/app_auth_controller.dart';
 import 'package:etp_data/controllers/app_category_controller.dart';
 import 'package:etp_data/controllers/app_chat_controller.dart';
+import 'package:etp_data/controllers/app_document_controller.dart';
 import 'package:etp_data/controllers/app_industry_controller.dart';
 import 'package:etp_data/controllers/app_status_controller.dart';
 import 'package:etp_data/controllers/app_task_controller.dart';
@@ -15,6 +16,7 @@ import 'package:etp_data/models/message.dart';
 import 'package:etp_data/models/status.dart';
 import 'package:etp_data/models/industry.dart';
 import 'package:etp_data/models/task_type.dart';
+import 'package:etp_data/models/document.dart';
 
 class AppService extends ApplicationChannel {
   late final ManagedContext managedContext;
@@ -50,6 +52,9 @@ class AppService extends ApplicationChannel {
     ..route('tasktype/[:id]')
         .link(() => AppTokenController())!
         .link(() => AppTaskTypeController(managedContext))
+    ..route('documents/[:id]')
+        .link(() => AppTokenController())!
+        .link(() => AppDocumentController(managedContext))
     ..route("user")
         .link(() => AppTokenController())!
         .link(() => AppUserController(managedContext));

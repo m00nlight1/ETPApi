@@ -1,5 +1,6 @@
 import 'package:conduit/conduit.dart';
 import 'package:etp_data/models/category.dart';
+import 'package:etp_data/models/document.dart';
 import 'package:etp_data/models/industry.dart';
 import 'package:etp_data/models/message.dart';
 import 'package:etp_data/models/status.dart';
@@ -61,4 +62,5 @@ class _Task {
   TaskType? taskType;
 
   ManagedSet<Message>? messages;
+  ManagedSet<FileDocument>? documentsList;
 }

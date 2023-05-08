@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:conduit/conduit.dart';
 import 'package:etp_data/models/category.dart';
+import 'package:etp_data/models/document.dart';
 import 'package:etp_data/models/industry.dart';
 import 'package:etp_data/models/status.dart';
 import 'package:etp_data/models/task.dart';
@@ -98,7 +99,8 @@ class AppTaskController extends ResourceController {
         ..join(object: (x) => x.status)
         ..join(object: (x) => x.industry)
         ..join(object: (x) => x.taskType)
-        ..join(object: (x) => x.category);
+        ..join(object: (x) => x.category)
+        ..join(set: (x) => x.documentsList);
       final currentTask = await qGetTask.fetchOne();
       return Response.ok(currentTask);
     } catch (error) {
@@ -119,6 +121,13 @@ class AppTaskController extends ResourceController {
       }
       if (task.user?.id != currentAuthorId) {
         return AppResponse.ok(message: "Нет доступа к редактированию задачи");
+      }
+      if (updatedTask.title == null ||
+          updatedTask.title?.isEmpty == true ||
+          updatedTask.content == null ||
+          updatedTask.content?.isEmpty == true) {
+        return AppResponse.badRequest(
+            message: "Заполните поля Название и Описание");
       }
       final Category category = Category();
       final Status status = Status();
@@ -149,13 +158,6 @@ class AppTaskController extends ResourceController {
         ..values.staffLevel = updatedTask.staffLevel
         ..values.resultsOfTheWork = updatedTask.resultsOfTheWork
         ..values.expenses = updatedTask.expenses;
-      if (updatedTask.title == null ||
-          updatedTask.title?.isEmpty == true ||
-          updatedTask.content == null ||
-          updatedTask.content?.isEmpty == true) {
-        return AppResponse.badRequest(
-            message: "Заполните поля Название и Описание");
-      }
       await qUpdateTask.update();
       return AppResponse.ok(message: "Задача успешно обновлена");
     } catch (error) {
@@ -218,7 +220,8 @@ class AppTaskController extends ResourceController {
         ..join(object: (x) => x.status)
         ..join(object: (x) => x.industry)
         ..join(object: (x) => x.taskType)
-        ..join(object: (x) => x.category);
+        ..join(object: (x) => x.category)
+        ..join(set: (x) => x.documentsList);
       final List<Task> tasks = await qGetAllTasks.fetch();
       if (tasks.isEmpty) return Response.notFound();
       return Response.ok(tasks);
