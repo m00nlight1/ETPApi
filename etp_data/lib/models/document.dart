@@ -9,7 +9,7 @@ class _FileDocument {
   int? id;
   @Column(indexed: true)
   String? name;
-  @Column(indexed: true)
+  @Column(nullable: true, indexed: true)
   String? filePath;
   @Column(indexed: true)
   DateTime? createdAt;
