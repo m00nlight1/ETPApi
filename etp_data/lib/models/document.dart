@@ -11,6 +11,8 @@ class _FileDocument {
   String? name;
   @Column(indexed: true)
   String? filePath;
+  @Column(indexed: true)
+  DateTime? createdAt;
 
   @Serialize(input: true, output: false)
   int? idTask;

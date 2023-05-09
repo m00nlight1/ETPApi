@@ -22,6 +22,7 @@ class AppDocumentController extends ResourceController {
       final qCreateDocument = Query<FileDocument>(managedContext)
         ..values.name = fileDocument.name
         ..values.filePath = fileDocument.filePath
+        ..values.createdAt = DateTime.now()
         ..values.user?.id = currentUserId
         ..values.task?.id = task.id;
       await qCreateDocument.insert();
@@ -59,7 +60,7 @@ class AppDocumentController extends ResourceController {
   Future<Response> getAllDocuments() async {
     try {
       final qGetAllDocuments = Query<FileDocument>(managedContext)
-        ..returningProperties((x) => [x.id, x.name, x.filePath, x.user, x.task])
+        ..returningProperties((x) => [x.id, x.name, x.filePath, x.createdAt, x.user, x.task])
         ..join(object: (x) => x.user)
             .returningProperties((x) => [x.id, x.username, x.email])
         ..join(object: (x) => x.task);
