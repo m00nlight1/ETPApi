@@ -56,16 +56,22 @@ class AppChatController extends ResourceController {
   }
 
   @Operation.get()
-  Future<Response> getChats() async {
+  Future<Response> getAllChats() async {
     try {
-      final qGetChats = Query<Message>(managedContext)
-        ..returningProperties(
-            (x) => [x.id, x.content, x.imageUrl, x.sentTo, x.user, x.task])
+      final qGetAllChats = Query<Message>(managedContext)
+        ..returningProperties((x) => [
+              x.id,
+              x.content,
+              x.imageUrl,
+              x.sentTo,
+              x.user,
+              x.task,
+            ])
         ..join(object: (x) => x.user)
             .returningProperties((x) => [x.id, x.username, x.email])
         ..join(object: (x) => x.task);
-      final List<Message> chats = await qGetChats.fetch();
-      if (chats.isEmpty) return Response.notFound();
+      final List<Message> chats = await qGetAllChats.fetch();
+      if (chats.isEmpty) return AppResponse.ok(message: "Список чатов пуст");
       return Response.ok(chats);
     } catch (error) {
       return AppResponse.serverError(error, message: "Ошибка вывода чатов");
