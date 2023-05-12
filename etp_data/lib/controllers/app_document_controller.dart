@@ -57,10 +57,15 @@ class AppDocumentController extends ResourceController {
   }
 
   @Operation.get()
-  Future<Response> getAllDocuments() async {
+  Future<Response> getAllDocuments(
+    @Bind.header(HttpHeaders.authorizationHeader) String header,
+  ) async {
     try {
+      final id = AppUtils.getIdFromHeader(header);
       final qGetAllDocuments = Query<FileDocument>(managedContext)
-        ..returningProperties((x) => [x.id, x.name, x.filePath, x.createdAt, x.user, x.task])
+        ..where((x) => x.user?.id).equalTo(id)
+        ..returningProperties(
+            (x) => [x.id, x.name, x.filePath, x.createdAt, x.user, x.task])
         ..join(object: (x) => x.user)
             .returningProperties((x) => [x.id, x.username, x.email])
         ..join(object: (x) => x.task);

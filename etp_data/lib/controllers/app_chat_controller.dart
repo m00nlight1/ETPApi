@@ -54,4 +54,21 @@ class AppChatController extends ResourceController {
       return AppResponse.serverError(error, message: "Ошибка загрузки чата");
     }
   }
+
+  @Operation.get()
+  Future<Response> getChats() async {
+    try {
+      final qGetChats = Query<Message>(managedContext)
+        ..returningProperties(
+            (x) => [x.id, x.content, x.imageUrl, x.sentTo, x.user, x.task])
+        ..join(object: (x) => x.user)
+            .returningProperties((x) => [x.id, x.username, x.email])
+        ..join(object: (x) => x.task);
+      final List<Message> chats = await qGetChats.fetch();
+      if (chats.isEmpty) return Response.notFound();
+      return Response.ok(chats);
+    } catch (error) {
+      return AppResponse.serverError(error, message: "Ошибка вывода чатов");
+    }
+  }
 }
