@@ -71,7 +71,6 @@ class AppChatController extends ResourceController {
             .returningProperties((x) => [x.id, x.username, x.email])
         ..join(object: (x) => x.task);
       final List<Message> chats = await qGetAllChats.fetch();
-      if (chats.isEmpty) return AppResponse.ok(message: "Список чатов пуст");
       return Response.ok(chats);
     } catch (error) {
       return AppResponse.serverError(error, message: "Ошибка вывода чатов");

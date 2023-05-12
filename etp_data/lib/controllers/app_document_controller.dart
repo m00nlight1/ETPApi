@@ -70,7 +70,7 @@ class AppDocumentController extends ResourceController {
             .returningProperties((x) => [x.id, x.username, x.email])
         ..join(object: (x) => x.task);
       final List<FileDocument> docs = await qGetAllDocuments.fetch();
-      if (docs.isEmpty) return AppResponse.ok(message: "Список документов пуст");
+      if (docs.isEmpty) return Response.notFound();
       return Response.ok(docs);
     } catch (error) {
       return AppResponse.serverError(error,
