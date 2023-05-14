@@ -27,6 +27,23 @@ class AppUserController extends ResourceController {
     }
   }
 
+  @Operation.get("all")
+  Future<Response> getAllUsers() async {
+    try {
+      final qGetAllUsers = Query<User>(managedContext)
+        ..returningProperties((x) => [
+              x.id,
+              x.username,
+              x.email,
+            ]);
+      final List<User> users = await qGetAllUsers.fetch();
+      return Response.ok(users);
+    } catch (error) {
+      return AppResponse.serverError(error,
+          message: "Ошибка вывода пользователей");
+    }
+  }
+
   @Operation.post()
   Future<Response> updateProfile(
     @Bind.header(HttpHeaders.authorizationHeader) String header,

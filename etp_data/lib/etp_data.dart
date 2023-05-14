@@ -55,7 +55,7 @@ class AppService extends ApplicationChannel {
     ..route('documents/[:id]')
         .link(() => AppTokenController())!
         .link(() => AppDocumentController(managedContext))
-    ..route("user")
+    ..route("user/[:all]")
         .link(() => AppTokenController())!
         .link(() => AppUserController(managedContext));
 
