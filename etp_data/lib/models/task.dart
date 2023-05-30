@@ -27,6 +27,8 @@ class _Task {
   @Column(nullable: true, indexed: true)
   String? fileUrl;
   @Column(nullable: true, indexed: true)
+  String? fileName;
+  @Column(nullable: true, indexed: true)
   String? contractorCompany;
   @Column(nullable: true, indexed: true)
   String? responsibleMaster;

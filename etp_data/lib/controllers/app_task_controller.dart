@@ -49,6 +49,7 @@ class AppTaskController extends ResourceController {
         ..values.endOfWork = task.endOfWork
         ..values.imageUrl = task.imageUrl
         ..values.fileUrl = task.fileUrl
+        ..values.fileName = task.fileName
         ..values.contractorCompany = task.contractorCompany
         ..values.responsibleMaster = task.responsibleMaster
         ..values.representative = task.representative
@@ -81,6 +82,7 @@ class AppTaskController extends ResourceController {
               x.endOfWork,
               x.imageUrl,
               x.fileUrl,
+              x.fileName,
               x.contractorCompany,
               x.responsibleMaster,
               x.representative,
@@ -151,6 +153,7 @@ class AppTaskController extends ResourceController {
         ..values.endOfWork = updatedTask.endOfWork
         ..values.imageUrl = updatedTask.imageUrl
         ..values.fileUrl = updatedTask.fileUrl
+        ..values.fileName = updatedTask.fileName
         ..values.contractorCompany = updatedTask.contractorCompany
         ..values.responsibleMaster = updatedTask.responsibleMaster
         ..values.representative = updatedTask.representative
@@ -202,6 +205,7 @@ class AppTaskController extends ResourceController {
               x.endOfWork,
               x.imageUrl,
               x.fileUrl,
+              x.fileName,
               x.contractorCompany,
               x.responsibleMaster,
               x.representative,
